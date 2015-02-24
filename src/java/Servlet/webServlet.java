@@ -148,7 +148,8 @@ public class webServlet extends HttpServlet {
             List li = new LinkedList();
             while (rs.next()) {
                //sb.append(String.format("%s\t%s\t%s\t%s\n", rs.getInt("productID"), rs.getString("name"), rs.getString("description"), rs.getInt("quantity")));
-             Map m1 = new LinkedHashMap();
+            //for conversion to json https://code.google.com/p/json-simple/downloads/detail?name=json-simple-1.1.1.jar
+                Map m1 = new LinkedHashMap();
                 m1.put("ProductID", rs.getInt("ProductID"));
                 m1.put("name", rs.getString("name"));
                 m1.put("description", rs.getString("description"));
@@ -159,7 +160,7 @@ public class webServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(webServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return sb.toString();
+        return json.replace("},", "},\n");
     }
 
 }
