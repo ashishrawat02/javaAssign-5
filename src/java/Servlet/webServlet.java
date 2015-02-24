@@ -54,7 +54,7 @@ public class webServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         Set<String> keySet = request.getParameterMap().keySet();
-        int counter=0;
+        int count=0;
         try (PrintWriter out = response.getWriter()) {
 
             if (keySet.contains("productID") && keySet.contains("name") && keySet.contains("description") && keySet.contains("quantity")) {
@@ -62,8 +62,8 @@ public class webServlet extends HttpServlet {
                 String name = request.getParameter("name");
                 String description = request.getParameter("description");
                 String quantity = request.getParameter("quantity");
-                counter=doUpdate("INSERT INTO product (productID,name,description,quantity) VALUES (?, ?, ?, ?)", productID, name, description, quantity);
-               if (counter > 0){
+                count=doUpdate("INSERT INTO product (productID,name,description,quantity) VALUES (?, ?, ?, ?)", productID, name, description, quantity);
+               if (count > 0){
                response.sendRedirect("http://http://localhost:8080/WebApplication1/product="+productID);
                }
                else{
