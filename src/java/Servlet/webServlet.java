@@ -13,6 +13,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +24,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.simple.JSONValue;
 
 /**
  *
@@ -49,6 +54,7 @@ public class webServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         Set<String> keySet = request.getParameterMap().keySet();
+        int counter=0;
         try (PrintWriter out = response.getWriter()) {
 
             if (keySet.contains("productID") && keySet.contains("name") && keySet.contains("description") && keySet.contains("quantity")) {
@@ -56,7 +62,13 @@ public class webServlet extends HttpServlet {
                 String name = request.getParameter("name");
                 String description = request.getParameter("description");
                 String quantity = request.getParameter("quantity");
-                doUpdate("INSERT INTO product (productID,name,description,quantity) VALUES (?, ?, ?, ?)", productID, name, description, quantity);
+                counter=doUpdate("INSERT INTO product (productID,name,description,quantity) VALUES (?, ?, ?, ?)", productID, name, description, quantity);
+               if (counter > 0){
+               response.sendRedirect("http://http://localhost:8080/WebApplication1/product="+productID);
+               }
+               else{
+               response.setStatus(500);
+               }
             } else {
 
                 out.println("Error: Not enough data to input. Please use a URL of the form /servlet?name=XYZ&age=XYZ");
@@ -126,15 +138,24 @@ public class webServlet extends HttpServlet {
 
     private String getResults(String query, String... params) {
         StringBuilder sb = new StringBuilder();
+          String json = "";
         try (Connection conn = Credentials.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             for (int i = 1; i <= params.length; i++) {
                 pstmt.setString(i, params[i - 1]);
             }
             ResultSet rs = pstmt.executeQuery();
+            List li = new LinkedList();
             while (rs.next()) {
-                sb.append(String.format("%s\t%s\t%s\t%s\n", rs.getInt("productID"), rs.getString("name"), rs.getString("description"), rs.getInt("quantity")));
+               //sb.append(String.format("%s\t%s\t%s\t%s\n", rs.getInt("productID"), rs.getString("name"), rs.getString("description"), rs.getInt("quantity")));
+             Map m1 = new LinkedHashMap();
+                m1.put("ProductID", rs.getInt("ProductID"));
+                m1.put("name", rs.getString("name"));
+                m1.put("description", rs.getString("description"));
+                m1.put("quantity", rs.getInt("quantity"));
+                li.add(m1);
             }
+             json = JSONValue.toJSONString(li);
         } catch (SQLException ex) {
             Logger.getLogger(webServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
