@@ -119,7 +119,7 @@ public class webServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             Connection conn = getConnection();
             if (keySet.contains("productID")) {
-                PreparedStatement pstmt = conn.prepareStatement("DELETE FROM TABLE`product` WHERE `productID`=" + request.getParameter("productID"));
+                PreparedStatement pstmt = conn.prepareStatement("DELETE FROM `product` WHERE `productID`=" + request.getParameter("productID"));
                 try {
                     pstmt.executeUpdate();
                 } catch (SQLException ex) {
