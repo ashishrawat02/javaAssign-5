@@ -120,7 +120,7 @@ public class product {
     @Path("{id}")
     public void doDelete(@PathParam("id") String id, String str) {
 
-        doUpdate("DELETE FROM PRODUCT WHERE product_id = ?", id);
+        doUpdate("DELETE FROM PRODUCT WHERE productID = ?", id);
 
     }
 
