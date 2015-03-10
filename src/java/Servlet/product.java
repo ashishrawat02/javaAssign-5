@@ -71,24 +71,27 @@ public class product {
                     break;
                 case VALUE_STRING:
                     value = parser.getString();
+                     map.put(name, value);
                     break;
                 case VALUE_NUMBER:
                     value = Integer.toString(parser.getInt());
+                     map.put(name, value);
                     break;
             }
         }
         System.out.println(map);
 
         String na = map.get("name");
-        String des = map.get("name");
+        String des = map.get("description");
         String qunt = map.get("quantity");
 
-        doUpdate("INSERT INTO PRODUCT(name,description,quantity)VALUES (?,?,?)", na, des, qunt);
+        doUpdate("INSERT INTO product (name,description,quantity)VALUES (?,?,?)", na, des, qunt);
     }
 
     @PUT
+    @Path("{id}")
     @Consumes("application/json")
-    public void doPut(String str) {
+    public void doPut(@PathParam("id") String id, String str) {
         JsonParser parser = Json.createParser(new StringReader(str));
         Map<String, String> map = new HashMap<>();
         String name = "", value;
@@ -101,19 +104,21 @@ public class product {
                     break;
                 case VALUE_STRING:
                     value = parser.getString();
+                     map.put(name, value);
                     break;
                 case VALUE_NUMBER:
                     value = Integer.toString(parser.getInt());
+                     map.put(name, value);
                     break;
             }
         }
         System.out.println(map);
 
         String na = map.get("name");
-        String des = map.get("name");
+        String des = map.get("description");
         String qunt = map.get("quantity");
 
-        doUpdate("INSERT INTO PRODUCT(name,description,quantity)VALUES (?,?,?)", na, des, qunt);
+        doUpdate("update product set productID = ?, name = ?, description = ?, quantity = ? where productID = ?", id, na, des, qunt, id);
     }
 
     @DELETE
