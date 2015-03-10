@@ -35,7 +35,7 @@ import org.json.simple.JSONValue;
  *
  * @author c0649005
  */
-@Path("/products")
+@Path("/product")
 public class product {
 
     @GET
