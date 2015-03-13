@@ -7,6 +7,7 @@ package Servlet;
 
 import database.Credentials;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +20,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -144,29 +147,35 @@ public class product {
     }
 
     private String getResults(String query, String... params) {
-        StringBuilder sb = new StringBuilder();
-        String json = "";
+       JsonArrayBuilder productArray = Json.createArrayBuilder();
+        String jsonString = new String();
         try (Connection conn = Credentials.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             for (int i = 1; i <= params.length; i++) {
                 pstmt.setString(i, params[i - 1]);
             }
             ResultSet rs = pstmt.executeQuery();
-            List li = new LinkedList();
+          
             while (rs.next()) {
+                JsonObjectBuilder jsonObject = Json.createObjectBuilder()
                 //sb.append(String.format("%s\t%s\t%s\t%s\n", rs.getInt("productID"), rs.getString("name"), rs.getString("description"), rs.getInt("quantity")));
                 //for conversion to json https://code.google.com/p/json-simple/downloads/detail?name=json-simple-1.1.1.jar
-                Map m1 = new LinkedHashMap();
-                m1.put("ProductID", rs.getInt("ProductID"));
-                m1.put("name", rs.getString("name"));
-                m1.put("description", rs.getString("description"));
-                m1.put("quantity", rs.getInt("quantity"));
-                li.add(m1);
+               
+                .add("ProductID", rs.getInt("ProductID"))
+                .add("name", rs.getString("name"))
+                .add("description", rs.getString("description"))
+               .add("quantity", rs.getInt("quantity"));
+                
+               jsonString = jsonObject.build().toString();
+               productArray.add(jsonObject);
             }
-            json = JSONValue.toJSONString(li);
+           
         } catch (SQLException ex) {
             Logger.getLogger(product.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return json.replace("},", "},\n");
+      if (params.length == 0){
+          jsonString = productArray.build().toString();
+      }
+      return jsonString;
     }
 }
